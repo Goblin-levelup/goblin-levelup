@@ -23,8 +23,6 @@
     header h1 { color: var(--accent-green); font-size: 1.8rem; }
     .card { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #2d3248; }
     .goblin-status { display: flex; align-items: center; gap: 15px; }
-    .goblin-avatar-box { width: 110px; height: 110px; border-radius: 12px; border: 3px solid var(--accent-green); overflow: hidden; background: #000; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-    .goblin-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
     .status-info { flex: 1; }
     .level-badge { display: inline-block; background: var(--accent-purple); padding: 3px 10px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; color: #fff; margin-bottom: 4px; }
     .exp-bar-container { background: #0f111a; height: 14px; border-radius: 7px; overflow: hidden; margin: 6px 0; border: 1px solid #3a3f58; }
@@ -57,11 +55,8 @@
     <h1>我要成為LV999哥布林</h1>
   </header>
 
-  <!-- 狀態面板 -->
+  <!-- 狀態面板（已取消頭像圖片，改為純狀態顯示） -->
   <div class="card goblin-status">
-    <div class="goblin-avatar-box">
-      <img id="goblinImg" src="油頭KAM撚哥布林.png" alt="哥布林頭像" onerror="this.onerror=null; this.src='新手gym撚哥布林.png';">
-    </div>
     <div class="status-info">
       <div>
         <span class="level-badge" id="goblinRank">油頭KAM撚哥布林</span>
@@ -221,12 +216,8 @@
     return '宇宙無敵 終極自律神';
   }
 
-  function getGoblinImage(rank) {
-    return rank + '.png';
-  }
-
   function loadGame() {
-    const saved = localStorage.getItem('goblin_save_v20');
+    const saved = localStorage.getItem('goblin_save_v21');
     if (saved) {
       try { state = Object.assign(state, JSON.parse(saved)); } catch(e) {}
     }
@@ -234,7 +225,7 @@
   }
 
   function saveGame() {
-    localStorage.setItem('goblin_save_v20', JSON.stringify(state));
+    localStorage.setItem('goblin_save_v21', JSON.stringify(state));
   }
 
   function getMaxExp(level) {
@@ -301,12 +292,6 @@
     document.getElementById('statInt').innerText = state.int;
     document.getElementById('statWil').innerText = state.wil;
     document.getElementById('statVit').innerText = state.vit;
-
-    const imgElement = document.getElementById('goblinImg');
-    const targetSrc = getGoblinImage(currentRank);
-    if (imgElement.getAttribute('src') !== targetSrc) {
-      imgElement.setAttribute('src', targetSrc);
-    }
 
     const multiplier = state.nopmoDays > 0 ? Math.pow(2, state.nopmoDays - 1) : 1;
     document.getElementById('nopmoDays').innerText = state.nopmoDays;
