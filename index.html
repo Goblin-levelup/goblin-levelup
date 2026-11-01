@@ -124,20 +124,99 @@
   };
 
   // 2. 七大罪 Boss 列表
-  const sinBosses = [
-    {
-      sin: "怠惰",
-      phases: [
-        { name: "蛇王森 (Phase 1)", avatar: "🦥", desc: "拖延症大魔王，陷喺梳化入面令你提唔起勁。", hp: 200, atk: 2 },
-        { name: "床褥沼澤 (Phase 2)", avatar: "🛋️", desc: "將你深深吸入床褥，意志開始瓦解！", hp: 800, atk: 5 },
-        { name: "拖延黑洞 (Phase 3)", avatar: "🕳️", desc: "將所有自律計劃拖延至明日的黑洞！", hp: 2500, atk: 12 },
-        { name: "時間蒸發者 (Phase 4)", avatar: "⏳", desc: "偷走你所有光陰與青春的無形大魔王！", hp: 8000, atk: 25 },
-        { name: "廢人氣場 (Phase 5)", avatar: "🌫️", desc: "散發讓全周圍失去所有動力與熱情的氣場！", hp: 25000, atk: 60 },
-        { name: "萬劫石化尊 (Phase 6)", avatar: "🗿", desc: "讓身體與心靈完全石化沉淪的半神心魔！", hp: 80000, atk: 150 },
-        { name: "終極虛無怠惰神 (Phase 7)", avatar: "👾", desc: "怠惰之極致！終極神魔！", hp: 250000, atk: 400 }
-      ]
-    }
-  ];
+ const sinBosses = [
+  {
+    sin: "怠惰",
+    desc: "吞噬行動力的泥潭",
+    phases: [
+      { name: "蛇王森 (Phase 1)", avatar: "🛋️", desc: "拖延症大魔王，陷喺梳化入面令你提唔起勁。", hp: 200, atk: 2 },
+      { name: "床褥沼澤 (Phase 2)", avatar: "🛏️", desc: "將你深深吸入床褥，意志開始瓦解！", hp: 800, atk: 4 },
+      { name: "拖延黑洞 (Phase 3)", avatar: "🕳️", desc: "將所有自律計劃拖延至明日的黑洞！", hp: 2500, atk: 7 },
+      { name: "時間蒸發者 (Phase 4)", avatar: "⏳", desc: "偷走你所有光陰與青春的無形大魔王！", hp: 6000, atk: 10 },
+      { name: "廢人氣場 (Phase 5)", avatar: "🌫️", desc: "散發讓全周圍失去所有動力與熱情的氣場！", hp: 15000, atk: 15 },
+      { name: "萬劫石化尊 (Phase 6)", avatar: "🗿", desc: "讓身體與心靈完全石化沉淪的半神心魔！", hp: 35000, atk: 20 },
+      { name: "終極虛無怠惰神 (Phase 7)", avatar: "🌌", desc: "怠惰之極致！終極神魔！", hp: 80000, atk: 30 }
+    ]
+  },
+  {
+    sin: "色慾",
+    desc: "榨乾精神的多巴胺陷阱",
+    phases: [
+      { name: "夜魅 Succubus (Phase 1)", avatar: "💋", desc: "誘惑你放棄今晚的自律目標！", hp: 500, atk: 3 },
+      { name: "演算法幻影 (Phase 2)", avatar: "📱", desc: "無窮無盡的短影片與性感推送陷阱！", hp: 1800, atk: 6 },
+      { name: "深夜腦魔 (Phase 3)", avatar: "👁️", desc: "在深夜理性最脆弱時侵蝕大腦！", hp: 5000, atk: 10 },
+      { name: "意志崩解者 (Phase 4)", avatar: "🔞", desc: "徹底瓦解你數日累積的戒色成果！", hp: 12000, atk: 15 },
+      { name: "多巴胺蜘蛛 (Phase 5)", avatar: "🕸️", desc: "編織快感之網，讓你無法自拔！", hp: 30000, atk: 22 },
+      { name: "精神榨乾者 (Phase 6)", avatar: "🥀", desc: "吸乾所有專注力與上進心靈的魔尊！", hp: 70000, atk: 30 },
+      { name: "終極色慾心魔皇 (Phase 7)", avatar: "🖤", desc: "色慾之源頭！終極心魔皇！", hp: 150000, atk: 40 }
+    ]
+  },
+  {
+    sin: "貪食",
+    desc: "摧毀健康的肉體深淵",
+    phases: [
+      { name: "糖癮獸 (Phase 1)", avatar: "🧋", desc: "高糖手搖飲品與甜品的罪惡誘惑！", hp: 1000, atk: 4 },
+      { name: "宵夜巨魔 (Phase 2)", avatar: "🍔", desc: "深夜 11 點誘惑你叫外賣宵夜！", hp: 3500, atk: 8 },
+      { name: "代謝摧毀者 (Phase 3)", avatar: "🌋", desc: "拖垮你基礎代謝率的體能殺手！", hp: 9000, atk: 13 },
+      { name: "暴食饕餮 (Phase 4)", avatar: "🍗", desc: "情緒化飲食與無限量暴飲暴食魔獸！", hp: 22000, atk: 18 },
+      { name: "胰島素狂魔 (Phase 5)", avatar: "🩸", desc: "讓血糖劇烈波動引發昏昏欲睡的惡魔！", hp: 50000, atk: 25 },
+      { name: "吞噬萬物獸 (Phase 6)", avatar: "🐋", desc: "吞噬你所有健康與身材線條的巨獸！", hp: 120000, atk: 35 },
+      { name: "終極黑洞胃囊神 (Phase 7)", avatar: "🪐", desc: "無底深淵暴食神尊！", hp: 250000, atk: 50 }
+    ]
+  },
+  {
+    sin: "貪婪",
+    desc: "被物質奴役的無底洞",
+    phases: [
+      { name: "課長哥布林 (Phase 1)", avatar: "🎰", desc: "衝動消費與遊戲抽卡衝動！", hp: 2500, atk: 5 },
+      { name: "負債陰影 (Phase 2)", avatar: "📈", desc: "過度消費帶來的心靈隱性壓力！", hp: 7500, atk: 10 },
+      { name: "虛榮魔尊 (Phase 3)", avatar: "💎", desc: "盲目追求名牌與表面光鮮！", hp: 18000, atk: 15 },
+      { name: "盲目消費狂 (Phase 4)", avatar: "💳", desc: "清空購物車帶來的短暫虛無快感！", hp: 45000, atk: 22 },
+      { name: "金錢陷阱王 (Phase 5)", avatar: "🏰", desc: "將人生價值與銀行存款完全綁定！", hp: 100000, atk: 30 },
+      { name: "物質奴隸尊 (Phase 6)", avatar: "⚖️", desc: "淪為物質與慾望控制的傀儡！", hp: 220000, atk: 42 },
+      { name: "終極吞金貪婪神 (Phase 7)", avatar: "🪙", desc: "貪婪之極致！無盡吞金神尊！", hp: 450000, atk: 60 }
+    ]
+  },
+  {
+    sin: "憤怒",
+    desc: "焚燒理智的情緒風暴",
+    phases: [
+      { name: "Emo 狂魔 (Phase 1)", avatar: "🔥", desc: "因微小挫折而內耗爆發的情緒化！", hp: 5000, atk: 6 },
+      { name: "理智焚燒者 (Phase 2)", avatar: "🌋", desc: "燒毀冷靜思考能力的理性殺手！", hp: 15000, atk: 12 },
+      { name: "情緒海嘯 (Phase 3)", avatar: "☄️", desc: "無預警衝動發脾氣破壞人際關係！", hp: 35000, atk: 18 },
+      { name: "暴躁雷霆巨靈 (Phase 4)", avatar: "⚡", desc: "無法控制情緒衝動的狂暴怪物！", hp: 80000, atk: 26 },
+      { name: "失控殺戮者 (Phase 5)", avatar: "🗡️", desc: "毀滅過去好不容易建立起的所有成果！", hp: 180000, atk: 38 },
+      { name: "狂暴修羅尊 (Phase 6)", avatar: "🩸", desc: "陷入無盡怨恨與內耗循環的修羅！", hp: 400000, atk: 52 },
+      { name: "終極毀滅憤怒神 (Phase 7)", avatar: "💥", desc: "焚盡一切理性與自律的毀滅之神！", hp: 800000, atk: 75 }
+    ]
+  },
+  {
+    sin: "妒忌",
+    desc: "扭曲自我鏡像的陰暗面",
+    phases: [
+      { name: "Monpo 哥 (Phase 1)", avatar: "🔍", desc: "狂碌社交媒體過度關心別人生活的窺探者！", hp: 10000, atk: 8 },
+      { name: "自卑巨獸 (Phase 2)", avatar: "🧪", desc: "拿別人的高光時刻對比自己的暗淡！", hp: 28000, atk: 15 },
+      { name: "自我懷疑神 (Phase 3)", avatar: "🪞", desc: "否定自身努力與進步的陰暗心魔！", hp: 65000, atk: 22 },
+      { name: "酸民毒蛇王 (Phase 4)", avatar: "🐍", desc: "吐出酸言酸語與陰暗負面情緒的毒蛇！", hp: 140000, atk: 32 },
+      { name: "陰暗凝視者 (Phase 5)", avatar: "👁️", desc: "無法為他人成功喝采的扭曲心靈！", hp: 300000, atk: 45 },
+      { name: "虛榮比較尊 (Phase 6)", avatar: "🕸️", desc: "陷於無止境比較與嫉恨的半神！", hp: 650000, atk: 60 },
+      { name: "終極萬物妒忌神 (Phase 7)", avatar: "🔮", desc: "扭曲真實與理智的終極妒忌神尊！", hp: 1200000, atk: 90 }
+    ]
+  },
+  {
+    sin: "傲慢",
+    desc: "終極孤高的自我毀滅",
+    phases: [
+      { name: "三日熱霸主 (Phase 1)", avatar: "👑", desc: "剛自律兩三天就以為自己大功告成！", hp: 20000, atk: 10 },
+      { name: "鬆懈帝王 (Phase 2)", avatar: "🏰", desc: "「今日放鬆下無所謂啦」的鬆懈陷阱！", hp: 50000, atk: 18 },
+      { name: "盲目自大體 (Phase 3)", avatar: "🌌", desc: "停止吸收新知識，傲慢忽視缺點！", hp: 120000, atk: 28 },
+      { name: "固步自封尊 (Phase 4)", avatar: "🪨", desc: "拒絕聽取任何建議與自我調整的磐石！", hp: 280000, atk: 40 },
+      { name: "虛假光芒神 (Phase 5)", avatar: "🌟", desc: "沉迷於虛幻優越感與過度自信！", hp: 600000, atk: 55 },
+      { name: "至尊自滿魔王 (Phase 6)", avatar: "⚜️", desc: "自律戰場上的終極強敵！", hp: 1300000, atk: 75 },
+      { name: "終極七大罪傲慢神尊 (Phase 7)", avatar: "👑", desc: "萬罪之首！人間自律極致測試終極神尊！", hp: 2500000, atk: 110 }
+    ]
+  }
+];
 
   // 3. 每日任務列表
   const tasks = [
