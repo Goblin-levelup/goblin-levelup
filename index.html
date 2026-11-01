@@ -30,7 +30,7 @@
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; text-align: center; }
     .stat-item { background: #25293c; padding: 6px; border-radius: 6px; }
     .stat-item label { font-size: 0.75rem; color: var(--text-muted); display: block; }
-    .stat-item val { font-size: 1rem; font-weight: bold; color: var(--accent-gold); }
+    .stat-item span { font-size: 1rem; font-weight: bold; color: var(--accent-gold); }
     .category-title { font-size: 1rem; color: var(--accent-gold); margin: 12px 0 8px 0; border-bottom: 1px solid #2d3248; padding-bottom: 4px; }
     .task-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
     .task-item { display: flex; align-items: center; justify-content: space-between; background: #25293c; padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; }
@@ -55,7 +55,7 @@
     <h1>我要成為LV999哥布林</h1>
   </header>
 
-  <!-- 狀態面板（已取消頭像圖片，改為純狀態顯示） -->
+  <!-- 狀態面板 -->
   <div class="card goblin-status">
     <div class="status-info">
       <div>
@@ -67,10 +67,10 @@
         EXP: <span id="currentExp">0</span> / <span id="maxExp">10</span>
       </div>
       <div class="stats-grid">
-        <div class="stat-item"><label>體能 (STR)</label><val id="statStr">5</val></div>
-        <div class="stat-item"><label>智力 (INT)</label><val id="statInt">5</val></div>
-        <div class="stat-item"><label>意志 (WIL)</label><val id="statWil">5</val></div>
-        <div class="stat-item"><label>活力 (VIT)</label><val id="statVit">5</val></div>
+        <div class="stat-item"><label>體能 (STR)</label><span id="statStr">5</span></div>
+        <div class="stat-item"><label>智力 (INT)</label><span id="statInt">5</span></div>
+        <div class="stat-item"><label>意志 (WIL)</label><span id="statWil">5</span></div>
+        <div class="stat-item"><label>活力 (VIT)</label><span id="statVit">5</span></div>
       </div>
     </div>
   </div>
@@ -81,7 +81,7 @@
     <div class="nopmo-flex">
       <div>
         <div class="streak-count"><span id="nopmoDays">0</span> <small style="font-size: 0.9rem; color: #fff;">日</small></div>
-        <p style="font-size: 0.8rem; color: var(--text-muted);">當前倍率：<span id="nopmoMultiplier" style="color: var(--accent-gold); font-weight: bold;">1x</span></p>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">當前倍率：<span id="nopmoMultiplier" style="color: var(--accent-gold); font-weight: bold;">1.0x</span></p>
       </div>
       <div style="display: flex; flex-direction: column; gap: 6px;">
         <button class="btn btn-green" onclick="checkInNoPMO()">每日簽到</button>
@@ -94,26 +94,7 @@
   <!-- 任務面板 -->
   <div class="card">
     <h3 style="margin-bottom: 5px; font-size: 1rem;">每日自律任務</h3>
-    <div id="taskContainer">
-      <div class="category-title">身體</div>
-      <ul class="task-list">
-        <li class="task-item"><span>早起唔賴床 (08:00 前) (+5 EXP) (+1體能)</span><div><button class="btn btn-green" onclick="completeTask(1)">搞掂</button></div></li>
-        <li class="task-item"><span>飲足 2000ml 水 (+10 EXP) (+2體能)</span><div><button class="btn btn-green" onclick="completeTask(2)">搞掂</button></div></li>
-        <li class="task-item"><span>做運動 / 健身 20 分鐘 (+20 EXP) (+4體能)</span><div><button class="btn btn-green" onclick="completeTask(3)">搞掂</button></div></li>
-      </ul>
-      <div class="category-title">精神</div>
-      <ul class="task-list">
-        <li class="task-item"><span>睇書 / 學習新知識 15 分鐘 (+5 EXP) (+1智力)</span><div><button class="btn btn-green" onclick="completeTask(4)">搞掂</button></div></li>
-        <li class="task-item"><span>戒糖 / 今日唔飲手搖飲品 (+10 EXP) (+2智力)</span><div><button class="btn btn-green" onclick="completeTask(5)">搞掂</button></div></li>
-        <li class="task-item"><span>檢視與記錄今日花費開支 (+20 EXP) (+4智力)</span><div><button class="btn btn-green" onclick="completeTask(6)">搞掂</button></div></li>
-      </ul>
-      <div class="category-title">心理</div>
-      <ul class="task-list">
-        <li class="task-item"><span>清理房間 / 整理書桌環境 (+10 EXP) (+2意志)</span><div><button class="btn btn-green" onclick="completeTask(7)">搞掂</button></div></li>
-        <li class="task-item"><span>實施 15 分鐘冥想或拉筋放鬆 (+5 EXP) (+1意志)</span><div><button class="btn btn-green" onclick="completeTask(8)">搞掂</button></div></li>
-        <li class="task-item"><span>今晚 11:30 前熄燈安穩入睡 (+20 EXP) (+4意志)</span><div><button class="btn btn-green" onclick="completeTask(9)">搞掂</button></div></li>
-      </ul>
-    </div>
+    <div id="taskContainer"></div>
   </div>
 
   <!-- Boss 地下城面板 -->
@@ -122,7 +103,7 @@
       <h3 style="color: var(--accent-red); font-size: 1rem;">心魔 Boss 地下城</h3>
       <span class="boss-phase-badge" id="bossPhaseTag">Phase 1 / 7</span>
     </div>
-    <div class="boss-avatar" id="bossAvatar">形態</div>
+    <div class="boss-avatar" id="bossAvatar">🦥</div>
     <h4 id="bossName" style="font-size: 1.1rem;">怠惰心魔 - 蛇王森</h4>
     <p style="font-size: 0.75rem; color: var(--accent-gold); margin-bottom: 6px;" id="bossDesc">拖延症大魔王，陷喺梳化入面令你提唔起勁。</p>
     <div class="hp-bar-container"><div class="hp-bar" id="bossHpBar"></div></div>
@@ -138,20 +119,20 @@
     lv: 1, exp: 0, str: 5, int: 5, wil: 5, vit: 5,
     nopmoDays: 0, consecutiveRelaxCount: 0, lastCheckIn: null,
     bossSinIndex: 0, bossPhase: 1, bossHp: 200, bossMaxHp: 200, bossKills: 0,
-    completedTasks: []
+    completedTasks: [], lastTaskResetDate: null
   };
 
   const sinBosses = [
     {
       sin: "怠惰",
       phases: [
-        { name: "蛇王森 (Phase 1)", avatar: "形態1", desc: "拖延症大魔王，陷喺梳化入面令你提唔起勁。", hp: 200, atk: 2 },
-        { name: "床褥沼澤 (Phase 2)", avatar: "形態2", desc: "將你深深吸入床褥，意志開始瓦解！", hp: 800, atk: 5 },
-        { name: "拖延黑洞 (Phase 3)", avatar: "形態3", desc: "將所有自律計劃拖延至明日的黑洞！", hp: 2500, atk: 12 },
-        { name: "時間蒸發者 (Phase 4)", avatar: "形態4", desc: "偷走你所有光陰與青春的無形大魔王！", hp: 8000, atk: 25 },
-        { name: "廢人氣場 (Phase 5)", avatar: "形態5", desc: "散發讓全周圍失去所有動力與熱情的氣場！", hp: 25000, atk: 60 },
-        { name: "萬劫石化尊 (Phase 6)", avatar: "形態6", desc: "讓身體與心靈完全石化沉淪的半神心魔！", hp: 80000, atk: 150 },
-        { name: "終極虛無怠惰神 (Phase 7)", avatar: "形態7", desc: "怠惰之極致！終極神魔！", hp: 250000, atk: 400 }
+        { name: "蛇王森 (Phase 1)", avatar: "🦥", desc: "拖延症大魔王，陷喺梳化入面令你提唔起勁。", hp: 200, atk: 2 },
+        { name: "床褥沼澤 (Phase 2)", avatar: "🛋️", desc: "將你深深吸入床褥，意志開始瓦解！", hp: 800, atk: 5 },
+        { name: "拖延黑洞 (Phase 3)", avatar: "🕳️", desc: "將所有自律計劃拖延至明日的黑洞！", hp: 2500, atk: 12 },
+        { name: "時間蒸發者 (Phase 4)", avatar: "⏳", desc: "偷走你所有光陰與青春的無形大魔王！", hp: 8000, atk: 25 },
+        { name: "廢人氣場 (Phase 5)", avatar: "🌫️", desc: "散發讓全周圍失去所有動力與熱情的氣場！", hp: 25000, atk: 60 },
+        { name: "萬劫石化尊 (Phase 6)", avatar: "🗿", desc: "讓身體與心靈完全石化沉淪的半神心魔！", hp: 80000, atk: 150 },
+        { name: "終極虛無怠惰神 (Phase 7)", avatar: "👾", desc: "怠惰之極致！終極神魔！", hp: 250000, atk: 400 }
       ]
     }
   ];
@@ -216,11 +197,20 @@
     return '宇宙無敵 終極自律神';
   }
 
+  function checkDailyReset() {
+    let today = new Date().toDateString();
+    if (state.lastTaskResetDate !== today) {
+      state.completedTasks = [];
+      state.lastTaskResetDate = today;
+    }
+  }
+
   function loadGame() {
     const saved = localStorage.getItem('goblin_save_v21');
     if (saved) {
       try { state = Object.assign(state, JSON.parse(saved)); } catch(e) {}
     }
+    checkDailyReset();
     updateUI();
   }
 
@@ -229,8 +219,14 @@
   }
 
   function getMaxExp(level) {
-    if (level <= 70) return Math.floor(10 * level + 1.5 * Math.pow(level, 2));[cite: 1]
-    return Math.floor(15 * Math.pow(level, 3) + 10 * Math.pow(level, 2) + 50 * level);[cite: 1]
+    if (level <= 70) return Math.floor(10 * level + 1.5 * Math.pow(level, 2));
+    return Math.floor(50 * level + 5 * Math.pow(level, 2)); // 修正過度誇張的經驗曲線
+  }
+
+  function getNoPmoMultiplier(days) {
+    if (days <= 0) return 1.0;
+    // 線性增長，最多 5.0 倍，防止數值崩潰
+    return Math.min(5.0, 1.0 + (days - 1) * 0.2);
   }
 
   function getCurrentBoss() {
@@ -293,9 +289,9 @@
     document.getElementById('statWil').innerText = state.wil;
     document.getElementById('statVit').innerText = state.vit;
 
-    const multiplier = state.nopmoDays > 0 ? Math.pow(2, state.nopmoDays - 1) : 1;
+    const multiplier = getNoPmoMultiplier(state.nopmoDays);
     document.getElementById('nopmoDays').innerText = state.nopmoDays;
-    document.getElementById('nopmoMultiplier').innerText = multiplier + 'x';
+    document.getElementById('nopmoMultiplier').innerText = multiplier.toFixed(1) + 'x';
 
     renderTasks();
 
@@ -311,6 +307,8 @@
 
   function addExp(amount) {
     state.exp += amount;
+    if (state.exp < 0) state.exp = 0; // 防止扣成負數
+
     while(state.exp >= getMaxExp(state.lv)) {
       state.exp -= getMaxExp(state.lv);
       state.lv++;
@@ -343,25 +341,23 @@
     state.consecutiveRelaxCount = 0;
     state.lastCheckIn = today;
     state.wil += 3; state.vit += 3;
-    const multiplier = Math.pow(2, state.nopmoDays - 1);
-    const rewardExp = 10 * multiplier;
+    const multiplier = getNoPmoMultiplier(state.nopmoDays);
+    const rewardExp = Math.floor(20 * multiplier);
     addExp(rewardExp);
     alert(`戒色簽到成功！連續 ${state.nopmoDays} 日！獲得 EXP +${rewardExp.toLocaleString()}！`);
   }
 
   function medicalRelax() {
+    if (!confirm('確定進行生理調節？')) return;
+    
     state.consecutiveRelaxCount++;
     if(state.consecutiveRelaxCount >= 2) {
       state.nopmoDays = 0; state.consecutiveRelaxCount = 0;
       addExp(-50);
       alert(`連續兩日放鬆！戒色天數歸零，扣除 50 EXP！`);
     } else {
-      if(confirm('確定今日生理調節？')) {
-        addExp(-5);
-        alert(`生理調節完成！EXP -5`);
-      } else {
-        state.consecutiveRelaxCount--;
-      }
+      addExp(-5);
+      alert(`生理調節完成！EXP -5`);
     }
     saveGame(); updateUI();
   }
@@ -380,7 +376,7 @@
     if(state.bossHp <= 0) {
       state.bossHp = 0;
       state.bossKills = (state.bossKills || 0) + 1;
-      let expReward = 1000 * state.bossPhase * (state.bossSinIndex + 1);
+      let expReward = 500 * state.bossPhase * (state.bossSinIndex + 1);
       if(state.bossPhase < 7) {
         alert(`成功擊破心魔！進入 Phase ${state.bossPhase + 1} 狂暴型態！`);
         state.bossPhase++;
