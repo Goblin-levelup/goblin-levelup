@@ -146,7 +146,7 @@
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <h3 style="color: var(--accent-gold); font-size: 1rem;">自律名人堂 (線上實時排行榜)</h3>
       <div style="display: flex; gap: 8px;">
-        <button class="btn btn-blue" style="padding: 4px 10px; font-size: 0.75rem;" onclick="syncLeaderboard(true)">手動刷新</button>
+        <button class="btn btn-blue" style="padding: 4px 10px; font-size: 0.75rem;" onclick="syncLeaderboard(true)">重新整理</button>
         <button class="btn btn-blue" style="padding: 4px 10px; font-size: 0.75rem;" onclick="changePlayerName()">修改大名</button>
       </div>
     </div>
@@ -156,7 +156,7 @@
         <tr><th>排名</th><th>大名</th><th>等級</th><th>戒色天數</th><th>擊殺 Boss</th></tr>
       </thead>
       <tbody id="leaderboardBody">
-        <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">排行榜讀取中...</td></tr>
+        <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">排行榜連線中...</td></tr>
       </tbody>
     </table>
   </div>
@@ -166,8 +166,13 @@
   const SUPABASE_URL = 'https://lmewlijuxjdgifflmjrb.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_pU6TC7NxGQz0zsivPTyr0A_xkYl9DMn';
   let supabaseClient = null;
-  if (window.supabase) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  
+  try {
+    if (window.supabase) {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+  } catch (e) {
+    console.warn("Supabase initialization failed", e);
   }
 
   let state = {
@@ -253,10 +258,10 @@
     return '宇宙無敵 終極自律神';
   }
 
-  // 圖片死圖安全防護
+  // 強化防死圖機制
   function handleImageError(img) {
-    if (!img.dataset.fallbackTried) {
-      img.dataset.fallbackTried = "true";
+    if (!img.dataset.failedOnce) {
+      img.dataset.failedOnce = "true";
       img.src = '新手gym撚哥布林.png';
     } else {
       img.src = '哥布林進化路線插圖 (3).jpg';
@@ -268,17 +273,16 @@
   }
 
   function loadGame() {
-    const saved = localStorage.getItem('goblin_save_v17');
+    const saved = localStorage.getItem('goblin_save_v18');
     if (saved) {
       try { state = Object.assign(state, JSON.parse(saved)); } catch(e) {}
     }
     updateUI();
-    // 首次載入時抓取一次排行榜
     syncLeaderboard(false);
   }
 
   function saveGame() {
-    localStorage.setItem('goblin_save_v17', JSON.stringify(state));
+    localStorage.setItem('goblin_save_v18', JSON.stringify(state));
   }
 
   function changePlayerName() {
@@ -288,12 +292,12 @@
       localStorage.setItem('goblin_player_name', state.playerName);
       saveGame();
       updateUI();
-      syncLeaderboard(true); // 手動改名時主動同步
+      syncLeaderboard(true);
     }
   }
 
   function getMaxExp(level) {
-    if (level <= 70) return Math.floor(10 * level + 1.5 * Math.pow(level, 2))[cite: 1];
+    if (level <= 70) return Math.floor(10 * level + 1.5 * Math.pow(level, 2));[cite: 1]
     return Math.floor(15 * Math.pow(level, 3) + 10 * Math.pow(level, 2) + 50 * level);[cite: 1]
   }
 
@@ -359,9 +363,9 @@
 
     const imgElement = document.getElementById('goblinImg');
     const targetSrc = getGoblinImage(currentRank);
-    if (imgElement.src !== targetSrc) {
-      imgElement.dataset.fallbackTried = ""; // 重置防呆
-      imgElement.src = targetSrc;
+    if (imgElement.getAttribute('src') !== targetSrc) {
+      imgElement.dataset.failedOnce = "";
+      imgElement.setAttribute('src', targetSrc);
     }
 
     document.getElementById('playerNameDisplay').innerText = state.playerName;
@@ -379,7 +383,7 @@
     document.getElementById('bossPhaseTag').innerText = `Phase ${state.bossPhase} / 7`;
     document.getElementById('bossHp').innerText = state.bossHp.toLocaleString();
     document.getElementById('bossMaxHp').innerText = state.bossMaxHp.toLocaleString();
-    document.getElementById('bossHpBar'].style.width = Math.max(0, (state.bossHp / state.bossMaxHp * 100)) + '%';
+    document.getElementById('bossHpBar').style.width = Math.max(0, (state.bossHp / state.bossMaxHp * 100)) + '%';
   }
 
   function addExp(amount) {
@@ -389,7 +393,6 @@
       state.lv++;
       state.str += 2; state.int += 2; state.wil += 2; state.vit += 2;
       alert(`哥布林突破升呢去到 Lv.${state.lv}！全屬性大提升！`);
-      // 升級時同步一次 leaderboard
       syncLeaderboard(true);
     }
     saveGame();
@@ -398,7 +401,8 @@
 
   function completeTask(id) {
     let task = tasks.find(t => t.id === id);
-    if(task && !state.completedTasks.includes(id)) {
+    if(task && (!state.completedTasks || !state.completedTasks.includes(id))) {
+      if (!state.completedTasks) state.completedTasks = [];
       state.completedTasks.push(id);
       if(task.stat === 'str') state.str += task.val;
       if(task.stat === 'int') state.int += task.val;
@@ -483,19 +487,20 @@
     saveGame(); updateUI();
   }
 
-  // 防頻繁請求冷卻機制 (Rate Limit Protection)
+  // 防頻繁請求冷卻機制與防卡死
   let lastSyncTime = 0;
   async function syncLeaderboard(force = false) {
     const now = Date.now();
-    // 如果不是強制刷新，且距離上次同步小於 10 秒，則直接略過，避免觸發 GitHub/Supabase 限制
-    if (!force && now - lastSyncTime < 10000) return;
+    if (!force && now - lastSyncTime < 5000) return;
     lastSyncTime = now;
 
     if (!supabaseClient) {
       renderLocalLeaderboard();
       return;
     }
+
     try {
+      // 嘗試上傳
       await supabaseClient.from('leaderboard').upsert({
         player_name: state.playerName,
         level: state.lv,
@@ -503,6 +508,7 @@
         kills: state.bossKills || 0
       }, { onConflict: 'player_name' });
 
+      // 嘗試拉取
       const { data, error } = await supabaseClient
         .from('leaderboard')
         .select('*')
@@ -541,6 +547,7 @@
     });
   }
 
+  // 初始化執行
   loadGame();
 </script>
 </body>
