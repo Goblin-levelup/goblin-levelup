@@ -123,7 +123,7 @@
     completedTasks: [], lastTaskResetDate: null
   };
 
-  // 2. 七大罪完整 Boss 列表與合理數值
+  // 2. 七大罪完整 Boss 列表
   const sinBosses = [
     {
       sin: "怠惰",
@@ -419,4 +419,105 @@
       state.completedTasks.push(id);
       if(task.stat === 'str') state.str += task.val;
       if(task.stat === 'int') state.int += task.val;
-      if(task.stat === 'wil')
+      if(task.stat === 'wil') state.wil += task.val;
+      if(task.stat === 'vit') state.vit += task.val;
+      addExp(task.exp);
+    }
+  }
+
+  // 🎯 戒色簽到 + 里程碑番號推薦
+  function checkInNoPMO() {
+    let today = new Date().toDateString();
+    if(state.lastCheckIn === today) {
+      return alert('今日已經簽過到啦！');
+    }
+    state.nopmoDays++;
+    state.consecutiveRelaxCount = 0;
+    state.lastCheckIn = today;
+    state.wil += 3; state.vit += 3;
+    
+    const multiplier = getNoPmoMultiplier(state.nopmoDays);
+    const rewardExp = Math.floor(10 * multiplier);
+    addExp(rewardExp);
+
+    let recommendationMsg = "";
+    if (state.nopmoDays === 3) {
+      recommendationMsg = "\n\n🔥 達成戒色 3 日里程碑！解鎖精神獎勵：\n🎬 SONE-614 瀬戶環奈";
+    } else if (state.nopmoDays === 5) {
+      recommendationMsg = "\n\n🔥 達成戒色 5 日里程碑！解鎖精神獎勵：\n🎬 IPX-934 桃乃木香奈";
+    } else if (state.nopmoDays === 10) {
+      recommendationMsg = "\n\n🔥 達成戒色 10 日里程碑！解鎖精神獎勵：\n🎬 STARS-804 神木麗";
+    } else if (state.nopmoDays === 15) {
+      recommendationMsg = "\n\n🔥 達成戒色 15 日里程碑！解鎖精神獎勵：\n🎬 SSIS-951 河北彩花";
+    } else if (state.nopmoDays === 25) {
+      recommendationMsg = "\n\n🔥 達成戒色 25 日殿堂級里程碑！解鎖豪華精神獎勵：\n🎬 SSIS-698 三上悠亞、新有菜及相澤南";
+    }
+
+    alert(`戒色簽到成功！連續 ${state.nopmoDays} 日！獲得 EXP +${rewardExp.toLocaleString()}！${recommendationMsg}`);
+  }
+
+  // 🎯 生理調節（連續兩日即破戒）
+  function medicalRelax() {
+    if(!confirm('確定今日生理調節？\n（⚠️ 警告：連續 2 日會被判定破戒，天數歸零並扣 50 EXP！）')) {
+      return;
+    }
+    state.consecutiveRelaxCount++;
+    if(state.consecutiveRelaxCount >= 2) {
+      state.nopmoDays = 0; 
+      state.consecutiveRelaxCount = 0;
+      addExp(-50);
+      alert(`🚨 連續兩日進行生理調節！破戒重置，戒色天數歸零，扣除 50 EXP！`);
+    } else {
+      addExp(-5);
+      alert(`生理調節完成！EXP -5\n（注意：聽日如果再調節就會當破戒清零架喇！）`);
+    }
+    saveGame(); 
+    updateUI();
+  }
+
+  function relapseNoPMO() {
+    if(confirm('真係要重置天數？清空連續日數並扣除 100 EXP！')) {
+      state.nopmoDays = 0; 
+      state.consecutiveRelaxCount = 0;
+      addExp(-100);
+      alert('戒色天數歸零！');
+    }
+  }
+
+  function attackBoss() {
+    let damage = (state.str + state.wil) * 10;
+    state.bossHp -= damage;
+    if(state.bossHp <= 0) {
+      state.bossHp = 0;
+      state.bossKills = (state.bossKills || 0) + 1;
+      let expReward = 1000 * state.bossPhase * (state.bossSinIndex + 1);
+      if(state.bossPhase < 7) {
+        alert(`成功擊破心魔！進入 Phase ${state.bossPhase + 1} 狂暴型態！`);
+        state.bossPhase++;
+      } else {
+        alert(`徹底淨化【${sinBosses[state.bossSinIndex % sinBosses.length].sin}】心魔終極形態！前往下一個大罪！`);
+        state.bossSinIndex++;
+        state.bossPhase = 1;
+      }
+      addExp(expReward);
+      const cur = getCurrentBoss();
+      state.bossMaxHp = cur.hp;
+      state.bossHp = state.bossMaxHp;
+    } else {
+      let cur = getCurrentBoss();
+      state.vit = Math.max(0, state.vit - cur.atk);
+      alert(`造成 ${damage.toLocaleString()} 點自律傷害！\nBoss 反擊！活力 (VIT) 減少了 ${cur.atk} 點！`);
+      if(state.vit === 0) {
+        addExp(-50);
+        state.vit = 5;
+        alert(`活力歸零陷入氣絕狀態！扣除 50 EXP！`);
+      }
+    }
+    saveGame(); 
+    updateUI();
+  }
+
+  loadGame();
+</script>
+</body>
+</html>
