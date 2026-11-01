@@ -218,7 +218,7 @@
   }
 
   function getGoblinRank(level) {
-    if (level <= 10) return '油頭kam撚哥布林';
+    if (level <= 10) return '油頭KAM撚哥布林';
     if (level <= 30) return '油頭毒撚哥布林';
     if (level <= 70) return '毒撚哥布林';
 
@@ -448,4 +448,104 @@
 
   function relapseNoPMO() {
     if(confirm('真係要重置天數？清空連續日數並扣除 100 EXP！')) {
-      state
+      state.nopmoDays = 0; state.consecutiveRelaxCount = 0;
+      addExp(-100);
+      syncLeaderboard(true);
+      alert('戒色天數歸零！');
+    }
+  }
+
+  function attackBoss() {
+    let damage = (state.str + state.wil) * 10;
+    state.bossHp -= damage;
+    if(state.bossHp <= 0) {
+      state.bossHp = 0;
+      state.bossKills = (state.bossKills || 0) + 1;
+      let expReward = 1000 * state.bossPhase * (state.bossSinIndex + 1);
+      if(state.bossPhase < 7) {
+        alert(`成功擊破心魔！進入 Phase ${state.bossPhase + 1} 狂暴型態！`);
+        state.bossPhase++;
+      } else {
+        alert(`徹底淨化七大罪心魔終極形態！`);
+        state.bossSinIndex++;
+        state.bossPhase = 1;
+      }
+      addExp(expReward);
+      syncLeaderboard(true);
+      const cur = getCurrentBoss();
+      state.bossMaxHp = cur.hp;
+      state.bossHp = state.bossMaxHp;
+    } else {
+      let cur = getCurrentBoss();
+      state.vit = Math.max(0, state.vit - cur.atk);
+      alert(`造成 ${damage.toLocaleString()} 點自律傷害！\nBoss 反擊！活力 (VIT) 減少了 ${cur.atk} 點！`);
+      if(state.vit === 0) {
+        addExp(-50);
+        state.vit = 5;
+        alert(`活力歸零陷入氣絕狀態！扣除 50 EXP！`);
+      }
+    }
+    saveGame(); updateUI();
+  }
+
+  let lastSyncTime = 0;
+  async function syncLeaderboard(force = false) {
+    const now = Date.now();
+    if (!force && now - lastSyncTime < 5000) return;
+    lastSyncTime = now;
+
+    if (!supabaseClient) {
+      renderLocalLeaderboard();
+      return;
+    }
+
+    try {
+      await supabaseClient.from('leaderboard').upsert({
+        player_name: state.playerName,
+        level: state.lv,
+        streak: state.nopmoDays,
+        kills: state.bossKills || 0
+      }, { onConflict: 'player_name' });
+
+      const { data, error } = await supabaseClient
+        .from('leaderboard')
+        .select('*')
+        .order('level', { ascending: false })
+        .limit(10);
+
+      if (error || !data) {
+        renderLocalLeaderboard();
+      } else {
+        renderLeaderboardUI(data);
+      }
+    } catch(e) {
+      renderLocalLeaderboard();
+    }
+  }
+
+  function renderLocalLeaderboard() {
+    const list = [{ player_name: state.playerName, level: state.lv, streak: state.nopmoDays, kills: state.bossKills || 0 }];
+    renderLeaderboardUI(list);
+  }
+
+  function renderLeaderboardUI(list) {
+    const body = document.getElementById('leaderboardBody');
+    if (!body) return;
+    body.innerHTML = '';
+    list.forEach((item, index) => {
+      let tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>#${index + 1}</td>
+        <td><strong>${item.player_name || '無名哥布林'}</strong></td>
+        <td>Lv.${item.level}</td>
+        <td>${item.streak || 0} 日</td>
+        <td>${item.kills || 0} 隻</td>
+      `;
+      body.appendChild(tr);
+    });
+  }
+
+  loadGame();
+</script>
+</body>
+</html>
