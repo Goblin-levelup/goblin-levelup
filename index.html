@@ -1,3 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我要成為LV999哥布林</title>
+  <style>
+    :root {
+      --bg-dark: #0f111a;
+      --card-bg: #1a1d2d;
+      --accent-green: #2ecc71;
+      --accent-red: #e74c3c;
+      --accent-gold: #f1c40f;
+      --accent-purple: #9b59b6;
+      --accent-blue: #3498db;
+      --text-light: #ecf0f1;
+      --text-muted: #8e9aaf;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-light); padding: 15px; display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 15px; }
+    header { text-align: center; padding: 12px; background: var(--card-bg); border-radius: 12px; border: 1px solid #2d3248; }
+    header h1 { color: var(--accent-green); font-size: 1.8rem; }
+    .card { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #2d3248; }
+    .goblin-status { display: flex; align-items: center; gap: 15px; }
+    .status-info { flex: 1; }
+    .level-badge { display: inline-block; background: var(--accent-purple); padding: 3px 10px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; color: #fff; margin-bottom: 4px; }
+    .exp-bar-container { background: #0f111a; height: 14px; border-radius: 7px; overflow: hidden; margin: 6px 0; border: 1px solid #3a3f58; }
+    .exp-bar { height: 100%; background: linear-gradient(90deg, #27ae60, #2ecc71); width: 0%; transition: width 0.3s ease; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; text-align: center; }
+    .stat-item { background: #25293c; padding: 6px; border-radius: 6px; }
+    .stat-item label { font-size: 0.75rem; color: var(--text-muted); display: block; }
+    .stat-item span { font-size: 1rem; font-weight: bold; color: var(--accent-gold); }
+    .category-title { font-size: 1rem; color: var(--accent-gold); margin: 12px 0 8px 0; border-bottom: 1px solid #2d3248; padding-bottom: 4px; }
+    .task-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .task-item { display: flex; align-items: center; justify-content: space-between; background: #25293c; padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; }
+    .btn { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+    .btn-green { background: var(--accent-green); color: #fff; }
+    .btn-red { background: var(--accent-red); color: #fff; }
+    .btn-blue { background: var(--accent-blue); color: #fff; }
+    .nopmo-card { border: 1px solid var(--accent-purple); background: linear-gradient(135deg, #1a1d2d, #251b34); }
+    .nopmo-flex { display: flex; justify-content: space-between; align-items: center; }
+    .streak-count { font-size: 2rem; font-weight: bold; color: var(--accent-gold); }
+    .boss-card { text-align: center; border: 1px solid var(--accent-red); background: linear-gradient(180deg, #1a1d2d, #2d151c); }
+    .boss-avatar { font-size: 3.5rem; margin: 8px 0; }
+    .boss-phase-badge { background: var(--accent-red); color: #fff; padding: 2px 10px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; }
+    .hp-bar-container { background: #0f111a; height: 12px; border-radius: 6px; overflow: hidden; margin: 8px 0; border: 1px solid #3a3f58; }
+    .hp-bar { height: 100%; background: var(--accent-red); width: 100%; transition: width 0.3s ease; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>我要成為LV999哥布林</h1>
+  </header>
+
+  <!-- 狀態面板 -->
+  <div class="card goblin-status">
+    <div class="status-info">
+      <div>
+        <span class="level-badge" id="goblinRank">油頭KAM撚哥布林</span>
+        <strong style="font-size: 1.1rem; margin-left: 6px;">Lv. <span id="goblinLv">1</span></strong>
+      </div>
+      <div class="exp-bar-container"><div class="exp-bar" id="expBar"></div></div>
+      <div style="font-size: 0.8rem; color: var(--text-muted);">
+        EXP: <span id="currentExp">0</span> / <span id="maxExp">10</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item"><label>體能 (STR)</label><span id="statStr">5</span></div>
+        <div class="stat-item"><label>智力 (INT)</label><span id="statInt">5</span></div>
+        <div class="stat-item"><label>意志 (WIL)</label><span id="statWil">5</span></div>
+        <div class="stat-item"><label>活力 (VIT)</label><span id="statVit">5</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 戒色修煉面板 -->
+  <div class="card nopmo-card">
+    <h3 style="color: var(--accent-purple); font-size: 1rem; margin-bottom: 5px;">戒色修煉</h3>
+    <div class="nopmo-flex">
+      <div>
+        <div class="streak-count"><span id="nopmoDays">0</span> <small style="font-size: 0.9rem; color: #fff;">日</small></div>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">當前倍率：<span id="nopmoMultiplier" style="color: var(--accent-gold); font-weight: bold;">1.0x</span></p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <button class="btn btn-green" onclick="checkInNoPMO()">每日簽到</button>
+        <button class="btn btn-blue" onclick="medicalRelax()">生理調節</button>
+        <button class="btn btn-red" onclick="relapseNoPMO()">破戒重置</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 任務面板 -->
+  <div class="card">
+    <h3 style="margin-bottom: 5px; font-size: 1rem;">每日自律任務</h3>
+    <div id="taskContainer"></div>
+  </div>
+
+  <!-- Boss 地下城面板 -->
+  <div class="card boss-card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="color: var(--accent-red); font-size: 1rem;">心魔 Boss 地下城</h3>
+      <span class="boss-phase-badge" id="bossPhaseTag">Phase 1 / 7</span>
+    </div>
+    <div class="boss-avatar" id="bossAvatar">🦥</div>
+    <h4 id="bossName" style="font-size: 1.1rem;">怠惰心魔 - 蛇王森</h4>
+    <p style="font-size: 0.75rem; color: var(--accent-gold); margin-bottom: 6px;" id="bossDesc">拖延症大魔王，陷喺梳化入面令你提唔起勁。</p>
+    <div class="hp-bar-container"><div class="hp-bar" id="bossHpBar"></div></div>
+    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
+      Boss HP: <span id="bossHp">200</span> / <span id="bossMaxHp">200</span>
+    </p>
+    <button class="btn btn-red" onclick="attackBoss()">發動普通自律攻擊</button>
+  </div>
+</div>
+
 <script>
   // 1. 初始化狀態（包含任務跨日重置記錄）
   let state = {
@@ -315,3 +431,5 @@
 
   loadGame();
 </script>
+</body>
+</html>
