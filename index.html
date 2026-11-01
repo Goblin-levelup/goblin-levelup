@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>我要成為LV999哥布林</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --bg-dark: #0f111a;
@@ -49,9 +48,6 @@
     .boss-phase-badge { background: var(--accent-red); color: #fff; padding: 2px 10px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; }
     .hp-bar-container { background: #0f111a; height: 12px; border-radius: 6px; overflow: hidden; margin: 8px 0; border: 1px solid #3a3f58; }
     .hp-bar { height: 100%; background: var(--accent-red); width: 100%; transition: width 0.3s ease; }
-    .leaderboard-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .leaderboard-table th, .leaderboard-table td { padding: 8px; border-bottom: 1px solid #2d3248; text-align: left; font-size: 0.85rem; }
-    .leaderboard-table th { color: var(--accent-gold); }
   </style>
 </head>
 <body>
@@ -64,7 +60,7 @@
   <!-- 狀態面板 -->
   <div class="card goblin-status">
     <div class="goblin-avatar-box">
-      <img id="goblinImg" src="新手gym撚哥布林.png" alt="哥布林頭像" onerror="handleImageError(this)">
+      <img id="goblinImg" src="油頭KAM撚哥布林.png" alt="哥布林頭像" onerror="this.onerror=null; this.src='新手gym撚哥布林.png';">
     </div>
     <div class="status-info">
       <div>
@@ -140,47 +136,14 @@
     </p>
     <button class="btn btn-red" onclick="attackBoss()">發動普通自律攻擊</button>
   </div>
-
-  <!-- 線上排行榜面板 -->
-  <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="color: var(--accent-gold); font-size: 1rem;">自律名人堂 (線上實時排行榜)</h3>
-      <div style="display: flex; gap: 8px;">
-        <button class="btn btn-blue" style="padding: 4px 10px; font-size: 0.75rem;" onclick="syncLeaderboard(true)">重新整理</button>
-        <button class="btn btn-blue" style="padding: 4px 10px; font-size: 0.75rem;" onclick="changePlayerName()">修改大名</button>
-      </div>
-    </div>
-    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">當前玩家：<strong id="playerNameDisplay" style="color: #fff;">無名哥布林</strong></p>
-    <table class="leaderboard-table">
-      <thead>
-        <tr><th>排名</th><th>大名</th><th>等級</th><th>戒色天數</th><th>擊殺 Boss</th></tr>
-      </thead>
-      <tbody id="leaderboardBody">
-        <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">排行榜連線中...</td></tr>
-      </tbody>
-    </table>
-  </div>
 </div>
 
 <script>
-  const SUPABASE_URL = 'https://lmewlijuxjdgifflmjrb.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_pU6TC7NxGQz0zsivPTyr0A_xkYl9DMn';
-  let supabaseClient = null;
-  
-  try {
-    if (window.supabase) {
-      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    }
-  } catch (e) {
-    console.warn("Supabase init fail", e);
-  }
-
   let state = {
     lv: 1, exp: 0, str: 5, int: 5, wil: 5, vit: 5,
     nopmoDays: 0, consecutiveRelaxCount: 0, lastCheckIn: null,
     bossSinIndex: 0, bossPhase: 1, bossHp: 200, bossMaxHp: 200, bossKills: 0,
-    completedTasks: [],
-    playerName: localStorage.getItem('goblin_player_name') || '無名哥布林'
+    completedTasks: []
   };
 
   const sinBosses = [
@@ -258,47 +221,24 @@
     return '宇宙無敵 終極自律神';
   }
 
-  // 安全防止圖片死圖
-  function handleImageError(img) {
-    if (!img.dataset.step) {
-      img.dataset.step = "1";
-      img.src = '初段鐵血修羅哥布林.png';
-    } else if (img.dataset.step === "1") {
-      img.dataset.step = "2";
-      img.src = '初段全能潛龍哥布林.png';
-    }
-  }
-
   function getGoblinImage(rank) {
     return rank + '.png';
   }
 
   function loadGame() {
-    const saved = localStorage.getItem('goblin_save_v19');
+    const saved = localStorage.getItem('goblin_save_v20');
     if (saved) {
       try { state = Object.assign(state, JSON.parse(saved)); } catch(e) {}
     }
     updateUI();
-    syncLeaderboard(false);
   }
 
   function saveGame() {
-    localStorage.setItem('goblin_save_v19', JSON.stringify(state));
-  }
-
-  function changePlayerName() {
-    const newName = prompt("請輸入你喺自律江湖的大名：", state.playerName);
-    if (newName && newName.trim() !== '') {
-      state.playerName = newName.trim();
-      localStorage.setItem('goblin_player_name', state.playerName);
-      saveGame();
-      updateUI();
-      syncLeaderboard(true);
-    }
+    localStorage.setItem('goblin_save_v20', JSON.stringify(state));
   }
 
   function getMaxExp(level) {
-    if (level <= 70) return Math.floor(10 * level + 1.5 * Math.pow(level, 2))[cite: 1];
+    if (level <= 70) return Math.floor(10 * level + 1.5 * Math.pow(level, 2));[cite: 1]
     return Math.floor(15 * Math.pow(level, 3) + 10 * Math.pow(level, 2) + 50 * level);[cite: 1]
   }
 
@@ -364,11 +304,9 @@
 
     const imgElement = document.getElementById('goblinImg');
     const targetSrc = getGoblinImage(currentRank);
-    if (imgElement.getAttribute('src') !== targetSrc && !imgElement.dataset.step) {
+    if (imgElement.getAttribute('src') !== targetSrc) {
       imgElement.setAttribute('src', targetSrc);
     }
-
-    document.getElementById('playerNameDisplay').innerText = state.playerName;
 
     const multiplier = state.nopmoDays > 0 ? Math.pow(2, state.nopmoDays - 1) : 1;
     document.getElementById('nopmoDays').innerText = state.nopmoDays;
@@ -393,13 +331,11 @@
       state.lv++;
       state.str += 2; state.int += 2; state.wil += 2; state.vit += 2;
       alert(`哥布林突破升呢去到 Lv.${state.lv}！全屬性大提升！`);
-      syncLeaderboard(true);
     }
     saveGame();
     updateUI();
   }
 
-  // 修復完成任務變數名稱問題
   function completeTask(id) {
     let task = tasks.find(t => t.id === id);
     if (task && (!state.completedTasks || !state.completedTasks.includes(id))) {
@@ -425,7 +361,6 @@
     const multiplier = Math.pow(2, state.nopmoDays - 1);
     const rewardExp = 10 * multiplier;
     addExp(rewardExp);
-    syncLeaderboard(true);
     alert(`戒色簽到成功！連續 ${state.nopmoDays} 日！獲得 EXP +${rewardExp.toLocaleString()}！`);
   }
 
@@ -450,7 +385,6 @@
     if(confirm('真係要重置天數？清空連續日數並扣除 100 EXP！')) {
       state.nopmoDays = 0; state.consecutiveRelaxCount = 0;
       addExp(-100);
-      syncLeaderboard(true);
       alert('戒色天數歸零！');
     }
   }
@@ -471,7 +405,6 @@
         state.bossPhase = 1;
       }
       addExp(expReward);
-      syncLeaderboard(true);
       const cur = getCurrentBoss();
       state.bossMaxHp = cur.hp;
       state.bossHp = state.bossMaxHp;
@@ -486,63 +419,6 @@
       }
     }
     saveGame(); updateUI();
-  }
-
-  let lastSyncTime = 0;
-  async function syncLeaderboard(force = false) {
-    const now = Date.now();
-    if (!force && now - lastSyncTime < 5000) return;
-    lastSyncTime = now;
-
-    if (!supabaseClient) {
-      renderLocalLeaderboard();
-      return;
-    }
-
-    try {
-      await supabaseClient.from('leaderboard').upsert({
-        player_name: state.playerName,
-        level: state.lv,
-        streak: state.nopmoDays,
-        kills: state.bossKills || 0
-      }, { onConflict: 'player_name' });
-
-      const { data, error } = await supabaseClient
-        .from('leaderboard')
-        .select('*')
-        .order('level', { ascending: false })
-        .limit(10);
-
-      if (error || !data) {
-        renderLocalLeaderboard();
-      } else {
-        renderLeaderboardUI(data);
-      }
-    } catch(e) {
-      renderLocalLeaderboard();
-    }
-  }
-
-  function renderLocalLeaderboard() {
-    const list = [{ player_name: state.playerName, level: state.lv, streak: state.nopmoDays, kills: state.bossKills || 0 }];
-    renderLeaderboardUI(list);
-  }
-
-  function renderLeaderboardUI(list) {
-    const body = document.getElementById('leaderboardBody');
-    if (!body) return;
-    body.innerHTML = '';
-    list.forEach((item, index) => {
-      let tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>#${index + 1}</td>
-        <td><strong>${item.player_name || '無名哥布林'}</strong></td>
-        <td>Lv.${item.level}</td>
-        <td>${item.streak || 0} 日</td>
-        <td>${item.kills || 0} 隻</td>
-      `;
-      body.appendChild(tr);
-    });
   }
 
   loadGame();
