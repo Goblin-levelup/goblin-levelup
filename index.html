@@ -64,8 +64,7 @@
   <!-- 狀態面板 -->
   <div class="card goblin-status">
     <div class="goblin-avatar-box">
-      <!-- 加入自動防死圖 fallback：若找不到當前稱號圖片，自動嘗試讀取通用圖或預設圖 -->
-      <img id="goblinImg" src="油頭KAM撚哥布林.png" alt="哥布林頭像" onerror="this.src='新手gym撚哥布林.png'; this.onerror=function(){this.src='哥布林進化路線插圖 (3).jpg';}">
+      <img id="goblinImg" src="油頭KAM撚哥布林.png" alt="哥布林頭像" onerror="handleImageError(this)">
     </div>
     <div class="status-info">
       <div>
@@ -146,7 +145,10 @@
   <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <h3 style="color: var(--accent-gold); font-size: 1rem;">自律名人堂 (線上實時排行榜)</h3>
-      <button class="btn btn-blue" style="padding: 4px 10px; font-size: 0.75rem;" onclick="changePlayerName()">修改大名</button>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-blue" style="padding: 4px 10px; font-size: 0.75rem;" onclick="syncLeaderboard(true)">手動刷新</button>
+        <button class="btn btn-blue" style="padding: 4px 10px; font-size: 0.75rem;" onclick="changePlayerName()">修改大名</button>
+      </div>
     </div>
     <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">當前玩家：<strong id="playerNameDisplay" style="color: #fff;">無名哥布林</strong></p>
     <table class="leaderboard-table">
@@ -154,7 +156,7 @@
         <tr><th>排名</th><th>大名</th><th>等級</th><th>戒色天數</th><th>擊殺 Boss</th></tr>
       </thead>
       <tbody id="leaderboardBody">
-        <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">排行榜連線中...</td></tr>
+        <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">排行榜讀取中...</td></tr>
       </tbody>
     </table>
   </div>
@@ -203,7 +205,6 @@
     { id: 9, category: "心理", stat: "wil", val: 4, text: "今晚 11:30 前熄燈安穩入睡", exp: 20 }
   ];
 
-  // 計算路線類型：1:Gym撚 2:偽毒 3:偽文青 4:潛力股
   function getRouteType() {
     if (state.str >= state.int && state.str >= state.wil) return 1;
     if (state.int >= state.str && state.int >= state.wil) return 2;
@@ -211,7 +212,6 @@
     return 4;
   }
 
-  // 稱號判斷
   function getGoblinRank(level) {
     if (level <= 10) return '油頭KAM撚哥布林';
     if (level <= 30) return '油頭毒撚哥布林';
@@ -253,22 +253,32 @@
     return '宇宙無敵 終極自律神';
   }
 
+  // 圖片死圖安全防護
+  function handleImageError(img) {
+    if (!img.dataset.fallbackTried) {
+      img.dataset.fallbackTried = "true";
+      img.src = '新手gym撚哥布林.png';
+    } else {
+      img.src = '哥布林進化路線插圖 (3).jpg';
+    }
+  }
+
   function getGoblinImage(rank) {
     return rank + '.png';
   }
 
   function loadGame() {
-    const saved = localStorage.getItem('goblin_save_v16');
+    const saved = localStorage.getItem('goblin_save_v17');
     if (saved) {
       try { state = Object.assign(state, JSON.parse(saved)); } catch(e) {}
     }
     updateUI();
-    syncLeaderboard();
+    // 首次載入時抓取一次排行榜
+    syncLeaderboard(false);
   }
 
   function saveGame() {
-    localStorage.setItem('goblin_save_v16', JSON.stringify(state));
-    syncLeaderboard();
+    localStorage.setItem('goblin_save_v17', JSON.stringify(state));
   }
 
   function changePlayerName() {
@@ -278,11 +288,12 @@
       localStorage.setItem('goblin_player_name', state.playerName);
       saveGame();
       updateUI();
+      syncLeaderboard(true); // 手動改名時主動同步
     }
   }
 
   function getMaxExp(level) {
-    if (level <= 70) return Math.floor(10 * level + 1.5 * Math.pow(level, 2));
+    if (level <= 70) return Math.floor(10 * level + 1.5 * Math.pow(level, 2))[cite: 1];
     return Math.floor(15 * Math.pow(level, 3) + 10 * Math.pow(level, 2) + 50 * level);[cite: 1]
   }
 
@@ -346,7 +357,13 @@
     document.getElementById('statWil').innerText = state.wil;
     document.getElementById('statVit').innerText = state.vit;
 
-    document.getElementById('goblinImg').src = getGoblinImage(currentRank);
+    const imgElement = document.getElementById('goblinImg');
+    const targetSrc = getGoblinImage(currentRank);
+    if (imgElement.src !== targetSrc) {
+      imgElement.dataset.fallbackTried = ""; // 重置防呆
+      imgElement.src = targetSrc;
+    }
+
     document.getElementById('playerNameDisplay').innerText = state.playerName;
 
     const multiplier = state.nopmoDays > 0 ? Math.pow(2, state.nopmoDays - 1) : 1;
@@ -362,7 +379,7 @@
     document.getElementById('bossPhaseTag').innerText = `Phase ${state.bossPhase} / 7`;
     document.getElementById('bossHp').innerText = state.bossHp.toLocaleString();
     document.getElementById('bossMaxHp').innerText = state.bossMaxHp.toLocaleString();
-    document.getElementById('bossHpBar').style.width = Math.max(0, (state.bossHp / state.bossMaxHp * 100)) + '%';
+    document.getElementById('bossHpBar'].style.width = Math.max(0, (state.bossHp / state.bossMaxHp * 100)) + '%';
   }
 
   function addExp(amount) {
@@ -372,6 +389,8 @@
       state.lv++;
       state.str += 2; state.int += 2; state.wil += 2; state.vit += 2;
       alert(`哥布林突破升呢去到 Lv.${state.lv}！全屬性大提升！`);
+      // 升級時同步一次 leaderboard
+      syncLeaderboard(true);
     }
     saveGame();
     updateUI();
@@ -401,6 +420,7 @@
     const multiplier = Math.pow(2, state.nopmoDays - 1);
     const rewardExp = 10 * multiplier;
     addExp(rewardExp);
+    syncLeaderboard(true);
     alert(`戒色簽到成功！連續 ${state.nopmoDays} 日！獲得 EXP +${rewardExp.toLocaleString()}！`);
   }
 
@@ -425,6 +445,7 @@
     if(confirm('真係要重置天數？清空連續日數並扣除 100 EXP！')) {
       state.nopmoDays = 0; state.consecutiveRelaxCount = 0;
       addExp(-100);
+      syncLeaderboard(true);
       alert('戒色天數歸零！');
     }
   }
@@ -445,6 +466,7 @@
         state.bossPhase = 1;
       }
       addExp(expReward);
+      syncLeaderboard(true);
       const cur = getCurrentBoss();
       state.bossMaxHp = cur.hp;
       state.bossHp = state.bossMaxHp;
@@ -461,7 +483,14 @@
     saveGame(); updateUI();
   }
 
-  async function syncLeaderboard() {
+  // 防頻繁請求冷卻機制 (Rate Limit Protection)
+  let lastSyncTime = 0;
+  async function syncLeaderboard(force = false) {
+    const now = Date.now();
+    // 如果不是強制刷新，且距離上次同步小於 10 秒，則直接略過，避免觸發 GitHub/Supabase 限制
+    if (!force && now - lastSyncTime < 10000) return;
+    lastSyncTime = now;
+
     if (!supabaseClient) {
       renderLocalLeaderboard();
       return;
